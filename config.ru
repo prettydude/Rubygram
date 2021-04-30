@@ -7,8 +7,7 @@ Rails.application.load_server
 
 require 'rack/cors'
 use Rack::Cors do
-
-  # allow all origins in development
+  # CORS
   allow do
     origins '*'
     resource '*',
