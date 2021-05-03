@@ -73,4 +73,14 @@ class ConversationChannel < ApplicationCable::Channel
     )
   end
 
+  def sendTyping(data)
+    ActionCable.server.broadcast(
+      "conversations-#{data["peer_id"]}",
+      {
+        type: "typing",
+        conversation_id: Conversation.get(current_user.id, data["peer_id"]).id
+      }
+    )
+  end
+
 end
