@@ -42,7 +42,7 @@ class ConversationChannel < ApplicationCable::Channel
         type: "getConversationInfo",
         conversation: render_json(
           template: 'conversation/basic',
-          assigns: { conversation: Conversation.get(current_user.id, data["peer_id"]) }
+          assigns: { conversation: Conversation.find(data["conversation_id"]) }
         )
       }
     )
@@ -55,9 +55,7 @@ class ConversationChannel < ApplicationCable::Channel
         type: "allConversations",
         conversations: render_json(
           template: 'conversation/list',
-          assigns: { conversations: Conversation.with(current_user.id)
-            .select { |x| x.messages.length } # don't return empty conversations
-          }
+          assigns: { conversations: Conversation.with(current_user.id).has_messages }
         )
       }
     )
