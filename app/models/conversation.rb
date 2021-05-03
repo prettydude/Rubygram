@@ -27,10 +27,4 @@ class Conversation < ApplicationRecord
   def opposed_user(user)
     user.id == recipient.id ? sender : recipient
   end
-
-  def as_json(options = {})
-    super(options.merge({ include: [:sender => { except: [:provider, :uid, :created_at, :updated_at, :allow_password_change] },
-       :recipient => { except: [:provider, :uid, :created_at, :updated_at, :allow_password_change] },
-      :messages => {include: :user}] }))
-  end
 end

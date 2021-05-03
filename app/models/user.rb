@@ -15,6 +15,9 @@ class User < ActiveRecord::Base
   validates :email, presence: true,
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: { case_sensitive: false }
+  validates_presence_of :nickname
+  validates_uniqueness_of :nickname
+  validates_presence_of :name
 
   has_many :messages
   has_many :conversations, foreign_key: :sender_id

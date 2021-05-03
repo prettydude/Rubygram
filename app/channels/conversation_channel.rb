@@ -1,4 +1,6 @@
 class ConversationChannel < ApplicationCable::Channel
+  include ChannelHelper
+
   def subscribed
     stream_from "conversations-#{current_user.id}"
   end
@@ -7,13 +9,28 @@ class ConversationChannel < ApplicationCable::Channel
     stop_all_streams
   end
 
+  def checkConnection() 
+    ActionCable.server.broadcast(
+      "conversations-#{current_user.id}",
+      {
+        type: "checkConnection",
+        response: "OK"
+      }
+    )
+  end
+
   def getConversation(data)
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
         type: "getConversation",
-        conversation: Conversation.includes(:recipient, :messages)
-                                    .get(current_user.id, data["peer_id"])
+        conversation: render_json(
+          template: 'conversation/basic',
+          assigns: { 
+            conversation: Conversation.get(current_user.id, data["peer_id"]),
+            messages: true 
+          }
+        )
       }
     )
   end
@@ -23,8 +40,10 @@ class ConversationChannel < ApplicationCable::Channel
       "conversations-#{current_user.id}",
       {
         type: "getConversationInfo",
-        conversation: Conversation.includes(:recipient, :messages)
-                                    .get(current_user.id, data["peer_id"])
+        conversation: render_json(
+          template: 'conversation/basic',
+          assigns: { conversation: Conversation.get(current_user.id, data["peer_id"]) }
+        )
       }
     )
   end
@@ -34,9 +53,12 @@ class ConversationChannel < ApplicationCable::Channel
       "conversations-#{current_user.id}",
       {
         type: "allConversations",
-        conversations: Conversation.includes(:recipient, :messages)
-                                   .with(current_user.id)
-                                   .select { |x| x.messages.length } #don't return empty conversations
+        conversations: render_json(
+          template: 'conversation/list',
+          assigns: { conversations: Conversation.with(current_user.id)
+            .select { |x| x.messages.length } # don't return empty conversations
+          }
+        )
       }
     )
   end
