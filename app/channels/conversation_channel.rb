@@ -13,8 +13,8 @@ class ConversationChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
-        type: "checkConnection",
-        response: "OK"
+        type: 'checkConnection',
+        response: 'OK'
       }
     )
   end
@@ -23,12 +23,12 @@ class ConversationChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
-        type: "getConversation",
+        type: 'getConversation',
         conversation: render_json(
           template: 'conversation/basic',
-          assigns: { 
-            conversation: Conversation.get(current_user.id, data["peer_id"]),
-            messages: true 
+          assigns: {
+            conversation: Conversation.get(current_user.id, data['peer_id']),
+            messages: true
           }
         )
       }
@@ -39,10 +39,10 @@ class ConversationChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
-        type: "getConversationInfo",
+        type: 'getConversationInfo',
         conversation: render_json(
           template: 'conversation/basic',
-          assigns: { conversation: Conversation.find(data["conversation_id"]) }
+          assigns: { conversation: Conversation.find(data['conversation_id']) }
         )
       }
     )
@@ -52,7 +52,7 @@ class ConversationChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
-        type: "allConversations",
+        type: 'allConversations',
         conversations: render_json(
           template: 'conversation/list',
           assigns: { conversations: Conversation.with(current_user.id).has_messages }
@@ -65,7 +65,7 @@ class ConversationChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "conversations-#{current_user.id}",
       {
-        type: "allUsers",
+        type: 'allUsers',
         users: User.all
       }
     )
@@ -73,10 +73,20 @@ class ConversationChannel < ApplicationCable::Channel
 
   def sendTyping(data)
     ActionCable.server.broadcast(
-      "conversations-#{data["peer_id"]}",
+      "conversations-#{data['peer_id']}",
       {
-        type: "typing",
-        conversation_id: Conversation.get(current_user.id, data["peer_id"]).id
+        type: 'typing',
+        conversation_id: Conversation.get(current_user.id, data['peer_id']).id
+      }
+    )
+  end
+
+  def searchUsers(data)
+    ActionCable.server.broadcast(
+      "conversations-#{current_user.id}",
+      {
+        type: 'searchUsers',
+        users: User.search(data['query'])
       }
     )
   end

@@ -13,10 +13,6 @@ class MessageChannel < ApplicationCable::Channel
     text = data['message']['text']
 
     Message.create(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
-    # ActionCable.server.broadcast(
-    #   "messages-#{current_user.id}",
-    #   {type: "newMessage", message: message_params}
-    # )
   end
 
   def getMessages(data)
@@ -24,10 +20,25 @@ class MessageChannel < ApplicationCable::Channel
     ActionCable.server.broadcast(
       "messages-#{current_user.id}",
       {
-        type: "messages",
+        type: 'messages',
         messages: Conversation.between(current_user.id, peer['id']).messages.as_json(include: :user)
       }
     )
+  end
+
+  def deleteMessage(data)
+    message = Message.find(data['id'])
+    if current_user.id == message.user_id
+      message.destroy
+    end
+  end
+
+  def editMessage(data)
+    message = Message.find(data['id'])
+    if current_user.id == message.user_id
+      message.body = data['body']
+      message.save
+    end
   end
 
 end

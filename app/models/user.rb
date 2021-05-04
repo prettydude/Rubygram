@@ -22,6 +22,14 @@ class User < ActiveRecord::Base
   has_many :messages
   has_many :conversations, foreign_key: :sender_id
 
+  def self.search(search)
+    if search
+      where('[name] LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%")
+    else
+      Users.first(3)
+    end
+  end
+
   def as_json(options = {})
     super(options.merge({ except: [:provider, :uid, :created_at, :updated_at, :allow_password_change] }))
   end

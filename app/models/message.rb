@@ -8,6 +8,8 @@ class Message < ApplicationRecord
 
   after_create_commit { MessageBroadcastJob.perform_later(self) }
 
+  after_destroy_commit { MessageDeleteBroadcastJob.perform_now(self) }
+
   def as_json(options = {})
     super(options.merge({ include: [:user] }))
   end
