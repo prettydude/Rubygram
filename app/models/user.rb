@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
 
   def self.search(search)
     if search
-      where('[name] LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%")
+      where('name LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%")
     else
       Users.first(3)
     end
