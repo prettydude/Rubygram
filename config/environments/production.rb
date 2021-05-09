@@ -45,8 +45,8 @@ Rails.application.configure do
   config.action_cable.url = 'wss://rubygramreact.heroku.com/cable'
   config.action_cable.allowed_request_origins = [/(?:https?:\/\/)?localhost(?::\d{1,5})?/, 'https://prettydude.github.io']
 
-  Rails.application.routes.default_url_options[:host] = 'https://github.com/prettydude/RubygramReact'
-  config.action_mailer.default_url_options = { host: 'https://github.com/prettydude/RubygramReact' }
+  Rails.application.routes.default_url_options[:host] = 'https://rubygramreact.herokuapp.com/'
+  config.action_mailer.default_url_options = { host: 'https://rubygramreact.herokuapp.com/' }
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 

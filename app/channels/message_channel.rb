@@ -14,14 +14,16 @@ class MessageChannel < ApplicationCable::Channel
     text = messageData['text']
     fileData = messageData['file']
 
-    message = Message.create(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
+    ActiveRecord::Base.transaction do
+      message = Message.new(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
 
-    if fileData
-      filename = fileData['filename'] ? fileData['filename'] : Time.now.to_i.to_s
-      file = Tempfile.new(filename, binmode: true)
-      file.write(fileData['bytes'].pack('C*'))
-      file.rewind
-      message.file.attach(io: file, filename: filename, content_type: fileData['content_type'])
+      if fileData
+        filename = fileData['filename'] || Time.now.to_i.to_s
+        file = Tempfile.new(filename, binmode: true)
+        file.write(fileData['bytes'].pack('C*'))
+        file.rewind
+        message.file.attach(io: file, filename: filename, content_type: fileData['content_type'])
+      end
     end
   end
 
@@ -38,9 +40,7 @@ class MessageChannel < ApplicationCable::Channel
 
   def deleteMessage(data)
     message = Message.find(data['id'])
-    if current_user.id == message.user_id
-      message.destroy
-    end
+    message.destroy if current_user.id == message.user_id
   end
 
   def editMessage(data)
@@ -50,5 +50,4 @@ class MessageChannel < ApplicationCable::Channel
       message.save
     end
   end
-
 end
