@@ -24,6 +24,7 @@ class MessageChannel < ApplicationCable::Channel
         file.rewind
         message.file.attach(io: file, filename: filename, content_type: fileData['content_type'])
       end
+      message.save
     end
   end
 
