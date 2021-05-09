@@ -43,10 +43,10 @@ class User < ActiveRecord::Base
   end
 
   def self.search(search)
-    if search.empty?
-      where('name LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%")
+    if search && !search.empty?
+      where('name LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%").limit(10)
     else
-      Users.first(3)
+      first(3)
     end
   end
 
