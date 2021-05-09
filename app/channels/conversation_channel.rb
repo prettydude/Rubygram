@@ -3,6 +3,7 @@ class ConversationChannel < ApplicationCable::Channel
 
   def subscribed
     stream_from "conversations-#{current_user.id}"
+    stream_from "global_conversations"
   end
 
   def unsubscribed
@@ -91,4 +92,20 @@ class ConversationChannel < ApplicationCable::Channel
     )
   end
 
+  def uploadAvatar(data)
+    # current_user.avatar.purge if current_user.avatar.attached?
+
+    file = Tempfile.new(Time.now.to_i.to_s, binmode: true)
+    file.write(data['bytes'].pack('C*'))
+    file.rewind
+    current_user.avatar.attach(io: file, filename: Time.now.to_i.to_s, content_type: data['content_type'])
+
+    ActionCable.server.broadcast(
+      'global_conversations',
+      {
+        type: 'updateAvatar',
+        user: current_user
+      }
+    )
+  end
 end

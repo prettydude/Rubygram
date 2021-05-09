@@ -7,6 +7,14 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
+  include Rails.application.routes.url_helpers
+
+  has_one_attached :avatar
+
+  has_many :messages
+  has_many :conversations, foreign_key: :sender_id
+
+  default_scope { with_attached_avatar }
 
   before_save { email.downcase! }
 
@@ -19,11 +27,23 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :nickname
   validates_presence_of :name
 
-  has_many :messages
-  has_many :conversations, foreign_key: :sender_id
+  validate :acceptable_avatar
+
+  def acceptable_avatar
+    return unless avatar.attached?
+  
+    unless avatar.byte_size <= 1.megabyte
+      errors.add(:avatar, "is too big")
+    end
+  
+    acceptable_types = ["image/jpeg", "image/jpg", "image/png"]
+    unless acceptable_types.include?(avatar.content_type)
+      errors.add(:avatar, "must be a JPEG or PNG")
+    end
+  end
 
   def self.search(search)
-    if search
+    if search.empty?
       where('name LIKE ? OR nickname LIKE ?', "%#{search}%", "%#{search}%")
     else
       Users.first(3)
@@ -31,7 +51,9 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge({ except: [:provider, :uid, :created_at, :updated_at, :allow_password_change] }))
+    super(options.merge({ except: [:provider, :email, :uid, :created_at, :updated_at, :allow_password_change] })).merge({
+      'avatar_url': avatar.attached? ? url_for(self.avatar) : nil
+    })
   end
 
 end

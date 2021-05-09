@@ -23,6 +23,10 @@ gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'devise_token_auth'
 
+gem 'lograge'
+
+gem 'active_model_serializers'
+
 gem 'rack-cors', :require => 'rack/cors'
 
 group :development, :test do
@@ -42,6 +46,7 @@ end
 
 group :production do
   gem 'pg'
+  gem "aws-sdk-s3"
 end
 
 group :test do

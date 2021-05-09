@@ -10,9 +10,19 @@ class MessageChannel < ApplicationCable::Channel
   def sendMessage(data)
     sender_id = current_user.id
     recipient_id = data['peer']['id']
-    text = data['message']['text']
+    messageData = data['message']
+    text = messageData['text']
+    fileData = messageData['file']
 
-    Message.create(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
+    message = Message.create(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
+
+    if fileData
+      filename = fileData['filename'] ? fileData['filename'] : Time.now.to_i.to_s
+      file = Tempfile.new(filename, binmode: true)
+      file.write(fileData['bytes'].pack('C*'))
+      file.rewind
+      message.file.attach(io: file, filename: filename, content_type: fileData['content_type'])
+    end
   end
 
   def getMessages(data)

@@ -1,6 +1,10 @@
 json.(conversation, :id, :recipient_id, :recipient, :sender_id, :sender)
-json.preview conversation.messages.last&.body
-json.last_at conversation.messages.last&.created_at
+
+last = conversation.messages.last
+if last
+  json.preview last.file.attached? ? 'File' : last.body
+  json.last_at last.created_at
+end
 
 if @messages
   json.messages conversation.messages
