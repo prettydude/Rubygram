@@ -7,5 +7,6 @@ if last
 end
 
 if @messages
-  json.messages conversation.messages
+  json.messages conversation.messages, partial: 'messages/message', as: :message
+  # json.messages conversation.messages
 end

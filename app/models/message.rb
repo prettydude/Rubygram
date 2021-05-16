@@ -20,4 +20,12 @@ class Message < ApplicationRecord
       'file': file ? file.blob : nil
     })
   end
+
+  def file_url
+    file.attached? ? url_for(file) : nil
+  end
+
+  def file_blob
+    file ? file.blob : nil
+  end
 end
