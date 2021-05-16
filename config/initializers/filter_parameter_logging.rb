@@ -11,7 +11,6 @@ Rails.application.config.filter_parameters += [
   :certificate,
   :otp,
   :ssn,
-  :bytes,
   :encoded_key,
   :signed_blob_id,
   :variation_key

@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   def acceptable_avatar
     return unless avatar.attached?
   
-    unless avatar.byte_size <= 1.megabyte
+    unless avatar.byte_size <= 5.megabyte
       errors.add(:avatar, "is too big")
     end
   

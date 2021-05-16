@@ -1,4 +1,6 @@
 class MessageBroadcastJob < ApplicationJob
+  include ChannelHelper
+
   queue_as :default
 
   def perform(message)
@@ -16,7 +18,12 @@ class MessageBroadcastJob < ApplicationJob
       "messages-#{user.id}",
       {
         type: 'newMessage',
-        message: message,
+        message: render_json(
+          template: 'messages/message',
+          assigns: {
+            message: message
+          }
+        )
       }
     )
   end

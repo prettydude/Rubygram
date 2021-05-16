@@ -13,19 +13,8 @@ class Message < ApplicationRecord
   after_create_commit { MessageBroadcastJob.perform_later(self) }
 
   after_destroy_commit { MessageDeleteBroadcastJob.perform_now(self) }
-
-  def as_json(options = {})
-    super(options.merge({ include: [:user] })).merge({
-      'file_url': file.attached? ? url_for(file) : nil,
-      'file': file ? file.blob : nil
-    })
-  end
-
+  
   def file_url
-    file.attached? ? url_for(file) : nil
-  end
-
-  def file_blob
-    file ? file.blob : nil
+    file.attached? ? url_for(self.file) : nil
   end
 end

@@ -1,4 +1,6 @@
 class MessageChannel < ApplicationCable::Channel
+  include ChannelHelper
+
   def subscribed
     stream_from "messages-#{current_user.id}"
   end
@@ -10,22 +12,24 @@ class MessageChannel < ApplicationCable::Channel
   def sendMessage(data)
     sender_id = current_user.id
     recipient_id = data['peer']['id']
-    messageData = data['message']
-    text = messageData['text']
-    fileData = messageData['file']
+    text = data['message']['text']
+    message = Message.create(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
+  end
 
-    ActiveRecord::Base.transaction do
-      message = Message.new(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: text)
+  def sendFile(data)
+    sender_id = current_user.id
+    recipient_id = data['peer']['id']
+    fileData = data['file']
+    filename = fileData['filename'] || Time.now.to_i.to_s
 
-      if fileData
-        filename = fileData['filename'] || Time.now.to_i.to_s
-        file = Tempfile.new(filename, binmode: true)
-        file.write(fileData['bytes'].pack('C*'))
-        file.rewind
-        message.file.attach(io: file, filename: filename, content_type: fileData['content_type'])
-      end
-      message.save
-    end
+    file = Tempfile.new(Time.now.to_i.to_s, binmode: true)
+    file.write(fileData['bytes'].pack('C*'))
+    file.rewind
+
+    message = Message.new(user_id: sender_id, conversation: Conversation.get(sender_id, recipient_id), body: "")
+    message.file.attach(io: file, filename: Time.now.to_i.to_s, content_type: fileData['content_type'])
+    Rails.logger.info(message.errors.inspect) unless message.save
+
   end
 
   def getMessages(data)
