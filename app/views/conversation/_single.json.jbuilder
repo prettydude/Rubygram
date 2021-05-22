@@ -7,6 +7,6 @@ if last
 end
 
 if @messages
-  json.messages conversation.messages, partial: 'messages/message', as: :message
+  json.messages conversation.messages.order(:updated_at), partial: 'messages/message', as: :message
   # json.messages conversation.messages
 end
