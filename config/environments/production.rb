@@ -43,7 +43,7 @@ Rails.application.configure do
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil
   config.action_cable.url = 'wss://rubygramreact.heroku.com/cable'
-  config.action_cable.allowed_request_origins = [/(?:https?:\/\/)?localhost(?::\d{1,5})?/, 'https://prettydude.github.io']
+  config.action_cable.allowed_request_origins = [/(?:https?:\/\/)?localhost(?::\d{1,5})?/, 'https://zubiden.github.io']
 
   Rails.application.routes.default_url_options[:host] = 'https://rubygramreact.herokuapp.com/'
   config.action_mailer.default_url_options = { host: 'https://rubygramreact.herokuapp.com/' }
