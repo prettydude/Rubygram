@@ -1,9 +1,9 @@
 # Rubygram
 Messenger in Ruby for university project
 
-Check it out: https://prettydude.github.io/RubygramReact
+Check it out: https://zubiden.github.io/RubygramReact
 
-Front-End repository: https://github.com/prettydude/RubygramReact
+Front-End repository: https://github.com/zubiden/RubygramReact
 
 ## Features
 
